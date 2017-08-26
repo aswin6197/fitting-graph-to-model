@@ -121,6 +121,7 @@ if(flag.y == 1){
 
 //draw the curve on the graph by giving the function and end points of the graph
 function curve(coord,values,ar) {
+    $("g").empty();
 
     ratio ={
         x : coord.xlen/(values.xend - values.xstart)/1,
@@ -143,6 +144,7 @@ function curve(coord,values,ar) {
         if(x > coord.x && x < coord.x + coord.xlen)
             if(y < coord.y + coord.ylen && y > coord.y)
             {
+
                 var points = t.getAttribute("points");
                 points += "  "+[x,y];
                 t.setAttribute('points',points);
@@ -181,7 +183,7 @@ $(document).mousemove(function move(){
         values.yend += change[1];
 
 
-        $("g").empty();
+
 
         curve(coord,values,ar);
         bpos = [event.pageX,event.pageY];

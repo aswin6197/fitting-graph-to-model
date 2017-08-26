@@ -13,13 +13,13 @@
 <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js'></script>
 
 <script type="text/javascript" src= "sins/MOMscript.js"></script>
-
+<script src="graph.js" type="text/javascript"></script>
 <script type="text/javascript" >
 //Script specific to simulation
 
 //program variables
 //controls section
-var simstatus=0; 
+var simstatus=0;
 var rotstatus=1;
 //comments section
 var commenttext="Some Text";
@@ -32,7 +32,7 @@ var tempPt=new point(0,0,"");
 var l= 40;
 var theta = 240; // all angles to be defined either in degrees only or radians only throughout the program and convert as and when required
 // All angles in Degrees. (mention the specification in the script like here)
-var omega = 1.5; // angular velocity in rad/s 
+var omega = 1.5; // angular velocity in rad/s
 //graphics section
 var canvas;
 var ctx;
@@ -94,12 +94,12 @@ function simstate()
   }
     if (imgfilename=="blueplaydull")
   {
-  	 time=0;			
+  	 time=0;
   	 clearInterval(pauseTime);
     document.getElementById('playpausebutton').src="sins/bluepausedull.png";
-    simTimeId=setInterval("time=time+0.1; varupdate(); ",'100');    
+    simTimeId=setInterval("time=time+0.1; varupdate(); ",'100');
     simstatus=0;
-  } 
+  }
 }
 
 // switches state of rotation between 1:CounterClockWise & -1:Clockwise
@@ -116,7 +116,7 @@ function rotstate()
   {
     document.getElementById('rotationbutton').src="sins/bluecwdull.png";
     rotstatus=1;
-  } 
+  }
 }
 /*
 //Displaying Equations for Quick Reference
@@ -128,8 +128,8 @@ function showEquations()
 		$('#quickref').css('width', '0px');
 		$('#quickref').css('left', '600px');
 		$('#quickref').css('border', '0px');
-		quickrefCS=false;	
-		
+		quickrefCS=false;
+
 	}
 	else
 	{
@@ -137,7 +137,7 @@ function showEquations()
 		$('#quickref').css('width', document.getElementById('quickrefimg').width+"px");
 		$('#quickref').css("left", 599-document.getElementById('quickrefimg').width+"px");
 		$('#quickref').css('border', 'solid 1px');
-		quickrefCS=true;	
+		quickrefCS=true;
 	}
 }
 */
@@ -149,29 +149,42 @@ function showLegend()
 		$('#legendicon').css('border', 'double');
 		$('#legend').css('height', '0px');
 		$('#legend').css('border', '0px');
-		legendCS=false;	
+		legendCS=false;
 	}
 	else
 	{
 		$('#legendicon').css('border', 'inset red');
 		$('#legend').css("height", document.getElementById('legendimg').height+"px");
 		$('#legend').css('border', 'solid 1px');
-		legendCS=true;	
+		legendCS=true;
 	}
 }
+var coord = {
+    x:500,              //x coordinate of the origin of graph
+    y:50,             //y coordinate of origin of graph
+    xlen:500,      //x coordinate of end of the x axis
+    ylen:500         //y coordinate of end of y axis
+};
 
+var values = {
+    xstart :-2,              //no of div in x axis
+    ystart :0,
+    xend : 2,
+    yend :8               // no of div in y axis
+}
 //Initialise system parameters here
 function varinit()
-{
-varchange();		
+{    svg = createSvg(coord);
+
+varchange();
 //Variable crank slider and number input types
-$('#crankslider').slider("value", 40);	
+$('#crankslider').slider("value", 40);
 $('#crankspinner').spinner("value", 40);
 //Variable theta slider and number input types
-$('#thetaslider').slider("value", 240);	
+$('#thetaslider').slider("value", 240);
 $('#thetaspinner').spinner("value", 240);
 //Variable omega slider and number input types
-$('#omegaslider').slider("value", 1.5);	
+$('#omegaslider').slider("value", 1.5);
 $('#omegaspinner').spinner("value", 1.5);
 
 }
@@ -182,7 +195,7 @@ function varchange()
 {
 //Variable crank slider and number input types
 $('#crankslider').slider({ max : 100, min : 10, step : 2 });		// slider initialisation : jQuery widget
-$('#crankspinner').spinner({ max : 100, min : 10, step : 1 });		// number initialisation : jQuery widget			
+$('#crankspinner').spinner({ max : 100, min : 10, step : 1 });		// number initialisation : jQuery widget
 // monitoring change in value and connecting slider and number
 // setting trace point coordinate arrays to empty on change of link length
 $( "#crankslider" ).on( "slide", function( e, ui ) { $('#crankspinner').spinner("value",ui.value); j=20; ptxddot=[]; ptxdot=[];ptx=[]; pty=[]; } );
@@ -191,7 +204,7 @@ $( "#crankspinner" ).on( "change", function() {  varchange() } );
 
 //Variable theta slider and number input types
 $('#thetaslider').slider({ max : 360, min : 0, step : 2 });		// slider initialisation : jQuery widget
-$('#thetaspinner').spinner({ max : 360, min : 0, step : 2 });		// number initialisation : jQuery widget			
+$('#thetaspinner').spinner({ max : 360, min : 0, step : 2 });		// number initialisation : jQuery widget
 // monitoring change in value and connecting slider and number
 // setting trace point coordinate arrays to empty on change of link length
 $( "#thetaslider" ).on( "slide", function( e, ui ) { $('#thetaspinner').spinner("value",ui.value); } );
@@ -200,7 +213,7 @@ $( "#thetaspinner" ).on( "change", function() {  varchange() } );
 
 //Variable omega slider and number input types
 $('#omegaslider').slider({ max : 2, min : 0.02, step : 0.01 });		// slider initialisation : jQuery widget
-$('#omegaspinner').spinner({ max : 2, min : 0.02, step : 0.01 });		// number initialisation : jQuery widget			
+$('#omegaspinner').spinner({ max : 2, min : 0.02, step : 0.01 });		// number initialisation : jQuery widget
 // monitoring change in value and connecting slider and number
 // setting trace point coordinate arrays to empty on change of link length
 $( "#omegaslider" ).on( "slide", function( e, ui ) { $('#omegaspinner').spinner("value",ui.value); j=20; ptxddot=[]; ptxdot=[]; ptx=[]; pty=[];  } );
@@ -217,8 +230,8 @@ function varupdate()
 {
 
 $('#crankslider').slider("value", $('#crankspinner').spinner('value'));  //updating slider location with change in spinner(debug)
-$('#thetaslider').slider("value", $('#thetaspinner').spinner('value')); 
-$('#omegaslider').slider("value", $('#omegaspinner').spinner('value')); 
+$('#thetaslider').slider("value", $('#thetaspinner').spinner('value'));
+$('#omegaslider').slider("value", $('#omegaspinner').spinner('value'));
 l=$('#crankspinner').spinner("value");
 
 printcomment("Simple Harmonic Motion <br> a = - &omega;<sup>2</sup> * A * cos( &omega; t )",1);
@@ -226,21 +239,21 @@ printcomment("Simple Harmonic Motion <br> a = - &omega;<sup>2</sup> * A * cos( &
 
 if(!simstatus)
 {
-$('#omegaslider').slider("enable"); 
+$('#omegaslider').slider("enable");
 $('#omegaspinner').spinner("enable");
 omega=$('#omegaspinner').spinner("value");
-$('#thetaslider').slider("disable"); 
-$('#thetaspinner').spinner("disable"); 
+$('#thetaslider').slider("disable");
+$('#thetaspinner').spinner("disable");
 theta+=(rotstatus*0.1*deg(omega));
 theta=theta%360;
 printcomment("",2);
 }
 if(simstatus)
 {
-$('#thetaslider').slider("enable"); 
+$('#thetaslider').slider("enable");
 $('#thetaspinner').spinner("enable");
-$('#omegaslider').slider("disable"); 
-$('#omegaspinner').spinner("disable"); 
+$('#omegaslider').slider("disable");
+$('#omegaspinner').spinner("disable");
 theta=$('#thetaspinner').spinner("value");
 printcomment("Acceleration (mm<sup>2</sup>/s) <br> a = -"+ omega +"<sup>2</sup> &times; "+ l +" &times; cos("+theta+"&deg;)</br>= "+ roundd(-omega*omega*l*Math.cos(rad(theta)),2),2);
 }
@@ -261,7 +274,7 @@ function draw()
   ctx = canvas.getContext("2d");
 
   ctx.clearRect(0,0,550,400);  //clears the complete canvas#simscreen everytime
-    
+
   o=pointtrans(o,trans);
   q=pointtrans(q,trans);
   ctx.save();
@@ -272,18 +285,18 @@ function draw()
   ctx.restore();
   //ptx.push(p.xcoord);
   //pty.push(p.ycoord);
-  disprem(ctx);  
+  disprem(ctx);
   pointjoin(o,q,ctx,"#DE4100",10);
-  pointdisp(o,ctx,2,"black","#003366");  
+  pointdisp(o,ctx,2,"black","#003366");
   pointdisp(q,ctx,6,"black","#003366");
   dispyoke(ctx);
   graph(ctx);
 
 
 }
-//function displaying the pivot of rotating link and the horizontal base 
+//function displaying the pivot of rotating link and the horizontal base
 function disprem(context)
-{ 
+{
 context.beginPath();
 context.strokeStyle="#BF5000";
 context.lineWidth=10;
@@ -347,10 +360,10 @@ if(document.getElementById("graphPlot").checked==true)
 	ptx.push(q.xcoord+145);
 	ptxdot.push(o.xcoord+145-(l*omega*Math.sin(rad(theta))));
 	ptxddot.push(o.xcoord+145-(l*omega*omega*Math.cos(rad(theta))));
-	pty.push(o.ycoord-j);
+	pty.push(o.ycoord - j);
 	j=j+1;
 	}
-	
+
 	tempPt.xcoord=q.xcoord+145;
 	tempPt.ycoord=o.ycoord;
 	pointdisp(tempPt,context,3,"#000000","#336699");
@@ -371,7 +384,7 @@ if(document.getElementById("graphPlot").checked==true)
 	}
 	context.stroke();
 	context.beginPath();
-	context.lineWidth=1;	
+	context.lineWidth=1;
 	context.strokeStyle="#000000";
 	context.font = "12px comic-sans";
    context.moveTo(o.xcoord+145,o.ycoord);
@@ -379,7 +392,7 @@ if(document.getElementById("graphPlot").checked==true)
 	context.strokeText("Time", o.xcoord+150,o.ycoord-265);
 	context.moveTo(o.xcoord-150, pty[0]);
 	context.lineTo(o.xcoord+450, pty[0]);
-	context.strokeText("Amplitude", o.xcoord+300,o.ycoord-3);	
+	context.strokeText("Amplitude", o.xcoord+300,o.ycoord-3);
 	context.save();
 	context.textAlign="center";
 	context.strokeText("+100", o.xcoord+145+100,pty[0]-10);
@@ -387,22 +400,36 @@ if(document.getElementById("graphPlot").checked==true)
 	context.strokeText("+200", o.xcoord+145+200,pty[0]-10);
 	context.strokeText("-200", o.xcoord+145-200,pty[0]-10);
 	context.restore();
-	
+
 	for( forvar=0; forvar<=300;forvar+=20) //amplitude axis marking
 	{
 	context.moveTo(o.xcoord+145-forvar,pty[0]+2.5);
 	context.lineTo(o.xcoord+145-forvar,pty[0]-2.5);
 	context.moveTo(o.xcoord+145+forvar,pty[0]+2.5);
 	context.lineTo(o.xcoord+145+forvar,pty[0]-2.5);
-	}		
-	context.stroke();	
+	}
+	context.stroke();
 	context.closePath();
 
+    var ar = [];
+    for(i=0;i<ptx.length;i++){
+        ar[i] = {
+            x : (ptx[i] - Math.min(ptx))/(Math.max(ptx) - Math.min(ptx) ) * (values.xend - values.xstart)  + values.xstart,
+            y : (pty[i] - Math.min(pty)) /(Math.max(pty) - Math.min(pty)) * (values.yend - values.ystart) + values.ystart
+            // x : (ptx[i])/ coord.xlen *(values.xend - values.xstart) + values.xstart,
+            // y : pty[i] / coord.ylen *(values.yend - values.ystart) + values.ystart
+        }
+    }
+console.log(ptx,ar);
+
+
+    curve(coord,values,ar);
+
 	plotgraph(ptx,pty,context,truncate);
-	plotgraph(ptxdot,pty,context,truncate,"#00FF00");
-	plotgraph(ptxddot,pty,context,truncate,"#FF0000");
+	// plotgraph(ptxdot,pty,context,truncate,"#00FF00");
+	// plotgraph(ptxddot,pty,context,truncate,"#FF0000");
 	}
-else 
+else
 	{
 		ptx=[];
 		ptxdot=[];
@@ -441,7 +468,7 @@ function printcomment(commenttext,commentloc)
   {
   document.getElementById('commentboxright').style.visibility='hidden';
   document.getElementById('commentboxleft').style.width='570px';
-  document.getElementById('commentboxleft').innerHTML = "<center>please report this issue to adityaraman@gmail.com</center>"; 
+  document.getElementById('commentboxleft').innerHTML = "<center>please report this issue to adityaraman@gmail.com</center>";
   // ignore use of deprecated tag <center> . Code is executed only if printcomment function receives inappropriate commentloc value
   }
 }
@@ -457,8 +484,8 @@ function printcomment(commenttext,commentloc)
 The simulation requires JavaScript to be enabled.
 </noscript>
 
-<!-- 
-Author : Sai Aditya Raman 
+<!--
+Author : Sai Aditya Raman
 send an email to adityaraman09@gmail.com for any communication
 -->
 
@@ -471,7 +498,7 @@ send an email to adityaraman09@gmail.com for any communication
 <!-- Region for simulation display -->
 <canvas id="simscreen" height="400px" width="550px"></canvas>
 
-<!-- Equation Reference and Legend for Graphs etc 
+<!-- Equation Reference and Legend for Graphs etc
 <div id="quickreficon" title="Equations" onclick="showEquations();"></div>
 <div id="quickref"><img id="quickrefimg" src="sins/rand.jpg"></img></div>-->
 <div id="legendicon" title="Legend" onclick="showLegend();"></div>
@@ -481,13 +508,13 @@ send an email to adityaraman09@gmail.com for any communication
 <div id="commentboxleft"></div>
 <div id="commentboxright"></div>
 
-<!-- DND-Title of region for variables display --> 
+<!-- DND-Title of region for variables display -->
 <div id="vartitle">VARIABLES</div>
 
 <!-- Region for Input parameters of simulation -->
 <div id="variables">
 
-<!-- System variable input from user through slider and spinner jQuery widgets 
+<!-- System variable input from user through slider and spinner jQuery widgets
 repeat block with new variable name and new id for widgets-->
 <div class="variable">
 <div class="varname"><p title="Link Length">Crank (mm)</p>
@@ -520,7 +547,7 @@ repeat block with new variable name and new id for widgets-->
 
 
 <div class="usercheck">
-<!-- Point tracing 
+<!-- Point tracing
 <input type="checkbox" id="trace" ></input> <p>Trace Mid Point</p>
 
 <!-- Reset Parameters
@@ -540,7 +567,7 @@ repeat block with new variable name and new id for widgets-->
 
 <!-- For trials during development
 write in trythis() function the outputs that you want to check.
-<input type='button' onclick='trythis()' value="try me"></input> 
+<input type='button' onclick='trythis()' value="try me"></input>
 -->
 </body>
 </html>
