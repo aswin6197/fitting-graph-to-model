@@ -360,7 +360,7 @@ if(document.getElementById("graphPlot").checked==true)
 	ptx.push(q.xcoord+145);
 	ptxdot.push(o.xcoord+145-(l*omega*Math.sin(rad(theta))));
 	ptxddot.push(o.xcoord+145-(l*omega*omega*Math.cos(rad(theta))));
-	pty.push(o.ycoord - j);
+	pty.push(j);
 	j=j+1;
 	}
 
@@ -412,15 +412,13 @@ if(document.getElementById("graphPlot").checked==true)
 	context.closePath();
 
     var ar = [];
-    for(i=0;i<ptx.length;i++){
+    for(var i=0;i<ptx.length;i++)
         ar[i] = {
-            x : (ptx[i] - Math.min(ptx))/(Math.max(ptx) - Math.min(ptx) ) * (values.xend - values.xstart)  + values.xstart,
-            y : (pty[i] - Math.min(pty)) /(Math.max(pty) - Math.min(pty)) * (values.yend - values.ystart) + values.ystart
-            // x : (ptx[i])/ coord.xlen *(values.xend - values.xstart) + values.xstart,
-            // y : pty[i] / coord.ylen *(values.yend - values.ystart) + values.ystart
+             x : (ptx[i] - 255)/(335 - 255 ) * (values.xend - values.xstart)  + values.xstart,
+             y : (pty[i] - 20 )/(260 - 20) * (values.yend - values.ystart) + values.ystart
+            //x : (ptx[i])/ coord.xlen *(values.xend - values.xstart) + values.xstart,
+            //y : pty[i] / coord.ylen *(values.yend - values.ystart) + values.yst
         }
-    }
-console.log(ptx,ar);
 
 
     curve(coord,values,ar);
